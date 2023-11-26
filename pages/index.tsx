@@ -2,10 +2,14 @@ import React, { useState, useEffect } from 'react';
 import Question, { QuestionProps } from '../components/Question';
 import Scoreboard from '../components/Scoreboard';
 import GameMode from '../components/GameMode';
+import Login from '../components/Login';
+import Header from '../components/Header';
 
 interface QuestionData extends Omit<QuestionProps, 'onAnswer'> {}
 
 const Home: React.FC = () => {
+  const [username, setUsername] = useState('');
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [questions, setQuestions] = useState<QuestionData[]>([]);
   const [currentQuestion, setCurrentQuestion] = useState<QuestionData | null>(null);
   const [score, setScore] = useState(0);
@@ -17,6 +21,11 @@ const Home: React.FC = () => {
       .then(response => response.json())
       .then(data => setQuestions(data[gameMode]));
   }, [gameMode]);
+
+  const handleLogin = (username: string) => {
+    setUsername(username);
+    setIsLoggedIn(true);
+  };
 
   const handleAnswer = (answer: string) => {
     if (currentQuestion && answer === currentQuestion.correctAnswer) {
@@ -32,16 +41,23 @@ const Home: React.FC = () => {
 
   return (
     <div>
-      <GameMode onModeSelect={handleModeSelect} />
-      {currentQuestion && (
-        <Question
-          question={currentQuestion.question}
-          options={currentQuestion.options}
-          correctAnswer={currentQuestion.correctAnswer}
-          onAnswer={handleAnswer}
-        />
+      {isLoggedIn ? (
+        <>
+          <Header username={username} />
+          <GameMode onModeSelect={handleModeSelect} />
+          {currentQuestion && (
+            <Question
+              question={currentQuestion.question}
+              options={currentQuestion.options}
+              correctAnswer={currentQuestion.correctAnswer}
+              onAnswer={handleAnswer}
+            />
+          )}
+          <Scoreboard score={score} />
+        </>
+      ) : (
+        <Login onLogin={handleLogin} />
       )}
-      <Scoreboard score={score} />
     </div>
   );
 };
