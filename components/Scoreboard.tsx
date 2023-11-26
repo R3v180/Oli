@@ -6,8 +6,8 @@ interface ScoreboardProps {
 
 const Scoreboard: React.FC<ScoreboardProps> = ({ score }) => {
   return (
-    <div>
-      <h2>Score: {score}</h2>
+    <div className="flex justify-center mt-10">
+      <h2 className="text-2xl">Score: {score}</h2>
     </div>
   );
 };
